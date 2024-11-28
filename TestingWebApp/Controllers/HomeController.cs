@@ -22,7 +22,7 @@ namespace TestingWebApp.Controllers
 
         [HttpPost]
         [Route("UploadFile")]
-        public bool UploadFile(FileVM file)
+        public bool UploadFile([FromForm] FileVM file)
         {
             try
             {

@@ -3,5 +3,6 @@ export class FileVM {
         public id?: number,
         public name?: string,
         public description?: string,
-        public fullPath?: string) { }
+        public fullPath?: string,
+        public file?: File) { }
 }

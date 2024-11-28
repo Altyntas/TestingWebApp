@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient} from '@angular/common/http';
 import { FileVM } from './models/FileModel';
-import { retry } from 'rxjs';
 
 @Injectable()
 
@@ -10,9 +9,9 @@ export class DataService {
 
     constructor(private http: HttpClient) { }
 
-    uploadFile(file: FileVM) {
+    uploadFile(file: FormData) {
         try {
-            return this.http.post(this.url + "/UploadFile", file).pipe().subscribe();
+            return this.http.post(this.url + "/UploadFile", file);
         }
         catch (e) {
             console.log(e);

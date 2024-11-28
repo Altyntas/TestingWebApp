@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { DataService } from '../../data.service';
 import { FileVM } from '../../models/FileModel';
+import { Observable } from 'rxjs';
  
 @Component({
     templateUrl: './home.component.html',
@@ -8,7 +9,7 @@ import { FileVM } from '../../models/FileModel';
 })
 
 export class HomeComponent implements OnInit {
-    file: FileVM = new FileVM();
+    fileVM: FileVM = new FileVM();
 
     constructor(private dataService: DataService) { }
 
@@ -16,13 +17,27 @@ export class HomeComponent implements OnInit {
         
     }
 
-    uploadFile(){
+    uploadFile(fileVM: FormData){
         try {
-            var file = new FileVM(1, "FileTestName", "TestDescr", "It works!");
-            var test = this.dataService.uploadFile(file);
+            this.dataService.uploadFile(fileVM).pipe().subscribe((s) => alert(s));
         }
         catch (e) {
             console.log(e);
         }
+    }
+
+    addFile() {
+        document.querySelector('input').click();
+    }
+
+    handle(e) {
+        var file = e.target.files[0];
+        var testFile = new FormData();
+        testFile.append("id", "0");
+        testFile.append("name", file.name);
+        testFile.append("description", "Place for description coming soon");
+        testFile.append("fullPath", "Coming Soon");
+        testFile.append("file", file)
+        this.uploadFile(testFile);
     }
 }
