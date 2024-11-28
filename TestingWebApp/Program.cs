@@ -1,21 +1,38 @@
 using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.SpaServices.AngularCli;
 using System.Reflection.Metadata;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddMvc(options =>
+builder.Services.AddSpaStaticFiles(configuration =>
 {
-    options.EnableEndpointRouting = false;
+    configuration.RootPath = "ClientApp/dist";
 });
 
 var app = builder.Build();
+var env = builder.Environment;
 
 app.UseRouting();
-app.MapGet("/", () => "Hello World!");
-app.UseMvc(routes =>
+
+if (env.IsDevelopment())
 {
-    routes.MapRoute(
-        name: "default",
-        template: "{controller}/{action=Index}/{id?}");
+    app.UseDeveloperExceptionPage();
+}
+
+app.UseStaticFiles();
+
+if (!env.IsDevelopment())
+{
+    app.UseSpaStaticFiles();
+}
+
+app.UseSpa(spa =>
+{
+    spa.Options.SourcePath = "ClientApp";
+
+    if (env.IsDevelopment())
+    {
+        spa.UseAngularCliServer(npmScript: "start");
+    }
 });
 
 app.Run();

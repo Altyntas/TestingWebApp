@@ -1,0 +1,43 @@
+{
+    "version": 1,
+    "projects": {
+      "testingwebapp": {
+        "projectType": "application",
+        "root": "",
+        "sourceRoot": "src",
+        "architect": {
+          "build": {
+            "builder": "@angular-devkit/build-angular:browser",
+            "options": {
+              "outputPath": "dist",
+              "index": "src/index.html",
+              "main": "src/main.ts",
+              "polyfills": "src/polyfills.ts",
+              "tsConfig": "tsconfig.json",
+              "aot": true
+            },
+            "configurations": {
+              "production": {
+                "optimization": true,
+                "outputHashing": "all",
+                "sourceMap": false,
+                "namedChunks": false,
+                "vendorChunk": false,
+                "buildOptimizer": true
+              }
+            }
+          },
+          "serve": {
+            "builder": "@angular-devkit/build-angular:dev-server",
+            "options": {
+              "browserTarget": "testingwebapp:build"
+            }
+          }
+        }
+      }
+    },
+    "defaultProject": "testingwebapp",
+    "cli": {
+      "analytics": "0bbf3249-bcf5-4deb-9b19-c8cc746d09e3"
+    }
+  }
