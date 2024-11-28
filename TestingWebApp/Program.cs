@@ -8,6 +8,8 @@ builder.Services.AddSpaStaticFiles(configuration =>
     configuration.RootPath = "ClientApp/dist";
 });
 
+builder.Services.AddControllers();
+
 var app = builder.Build();
 var env = builder.Environment;
 
@@ -24,6 +26,11 @@ if (!env.IsDevelopment())
 {
     app.UseSpaStaticFiles();
 }
+
+app.UseEndpoints(endpoints =>
+{
+    _ = endpoints.MapControllers();
+});
 
 app.UseSpa(spa =>
 {
