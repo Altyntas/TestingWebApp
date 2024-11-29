@@ -1,3 +1,4 @@
+using DAL;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
 using System.Reflection.Metadata;
@@ -9,6 +10,7 @@ builder.Services.AddSpaStaticFiles(configuration =>
 });
 
 builder.Services.AddControllers();
+builder.Services.AddDbContext<WebAppContext>();
 
 var app = builder.Build();
 var env = builder.Environment;
