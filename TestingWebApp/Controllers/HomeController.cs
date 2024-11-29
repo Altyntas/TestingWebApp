@@ -49,7 +49,7 @@ namespace TestingWebApp.Controllers
                 }
 
                 var context = new WebAppContext();
-                await context.DataFiles.AddAsync(new DataFile()
+                var dFile = await context.DataFiles.AddAsync(new DataFile()
                 {
                     Id = Guid.NewGuid(),
                     Name = file?.Name ?? string.Empty,
@@ -58,6 +58,14 @@ namespace TestingWebApp.Controllers
                     UploadDate = DateTime.Now,
                     Data = dataFile
                 });
+                await context.Queues.AddAsync(new Queue()
+                {
+                    Id = new Guid(),
+                    EntityId = dFile.Entity.Id,
+                    DateCreate = DateTime.Now,
+                    QueueType = 0 //file
+                });
+
                 await context.SaveChangesAsync();
 
                 return true;

@@ -11,6 +11,7 @@ namespace DAL
         }
 
         public DbSet<DataFile> DataFiles { get; set; }
+        public DbSet<Queue> Queues { get; set; }
 
         //builder
         //TODO: move into partial class
@@ -29,6 +30,19 @@ namespace DAL
                 entity.Property(x => x.ContentType).HasColumnName("content_type");
                 entity.Property(x => x.UploadDate).HasColumnName("upload_date").HasColumnType("timestamp"); ;
                 entity.Property(x => x.Data).HasColumnName("data");
+            });
+
+            builder.Entity<Queue>(entity =>
+            {
+                entity.ToTable("queue");
+
+                entity.HasKey(x => x.Id);
+                entity.Property(x => x.Id).HasColumnName("id");
+                entity.Property(x => x.EntityId).HasColumnName("entity_id");
+                entity.Property(x => x.QueueType).HasColumnName("queue_type");
+                entity.Property(x => x.DateCreate).HasColumnName("date_create").HasColumnType("timestamp");
+                entity.Property(x => x.DateUpdate).HasColumnName("date_update").HasColumnType("timestamp");
+                entity.Property(x => x.IsCompleted).HasColumnName("is_complited");
             });
         }
 
