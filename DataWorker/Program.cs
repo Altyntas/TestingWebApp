@@ -18,7 +18,10 @@ public class Program
                     })
                     .ConfigureServices((hostContext, services) =>
                     {
-                        services.AddDbContextFactory<WebAppContext>();
+                        services.AddDbContextFactory<WebAppContext>(options =>
+                        {
+                            options.UseQueryTrackingBehavior(Microsoft.EntityFrameworkCore.QueryTrackingBehavior.NoTracking);
+                        });
                         services.AddHostedService<FileWorker>();
                     });
     }

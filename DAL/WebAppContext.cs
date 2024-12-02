@@ -12,6 +12,8 @@ namespace DAL
 
         public DbSet<DataFile> DataFiles { get; set; }
         public DbSet<Queue> Queues { get; set; }
+        public DbSet<DataSetTable> DataSetTables { get; set; }
+        public DbSet<DataSetColumns> DataSetColumns { get; set; }
 
         //builder
         //TODO: move into partial class
@@ -43,6 +45,39 @@ namespace DAL
                 entity.Property(x => x.DateCreate).HasColumnName("date_create").HasColumnType("timestamp");
                 entity.Property(x => x.DateUpdate).HasColumnName("date_update").HasColumnType("timestamp");
                 entity.Property(x => x.IsCompleted).HasColumnName("is_complited");
+                entity.Property(x => x.DatasetTableGuid).HasColumnName("dataset_table_guid");
+            });
+
+            builder.Entity<DataSetTable>(entity =>
+            {
+                entity.ToTable("dataset_table");
+
+                entity.HasKey(x => x.Id);
+                entity.Property(x => x.Id).HasColumnName("id");
+                entity.Property(x => x.Name).HasColumnName("name");
+                entity.Property(x => x.CreateDate).HasColumnName("create_date").HasColumnType("timestamp");
+                entity.Property(x => x.UpdateDate).HasColumnName("update_date").HasColumnType("timestamp");
+
+                entity.HasMany(x => x.Columns)
+                    .WithOne(x => x.DataSetTable)
+                    .HasForeignKey(x => x.DataSetTableId);
+            });
+
+            builder.Entity<DataSetColumns>(entity =>
+            {
+                entity.ToTable("dataset_column");
+
+                entity.HasKey(x => x.Id);
+                entity.Property(x => x.Id).HasColumnName("id");
+                entity.Property(x => x.Name).HasColumnName("name");
+                entity.Property(x => x.Type).HasColumnName("type");
+                entity.Property(x => x.Description).HasColumnName("description");
+                entity.Property(x => x.Length).HasColumnName("length");
+                entity.Property(x => x.DataSetTableId).HasColumnName("dataset_table_id");
+
+                entity.HasOne(x => x.DataSetTable)
+                    .WithMany(x => x.Columns) 
+                    .HasForeignKey(x => x.DataSetTableId);
             });
         }
 

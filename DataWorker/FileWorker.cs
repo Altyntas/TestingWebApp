@@ -1,6 +1,8 @@
 ﻿using DAL;
+using DataWorker.DataMapping;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +17,7 @@ namespace DataWorker
         public FileWorker(IDbContextFactory<WebAppContext> dbContext)
         {
             _dbContext = dbContext;
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial; //TODO: move in appsettings
         }
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
@@ -22,7 +25,7 @@ namespace DataWorker
             {
                 try
                 {
-                    await JustCheckingReally();
+                    await ProcessFiles();
                     await Task.Delay(10000);
                 }
                 catch (Exception ex)
@@ -33,19 +36,24 @@ namespace DataWorker
             }
         }
 
-        private async Task JustCheckingReally()
+        private async Task ProcessFiles()
         {
             var context = _dbContext.CreateDbContext();
 
-            var filesToComplete = context.Queues.Where(q => !q.IsCompleted && q.QueueType == 0).ToList();
+            var queuesToComplete = await context.Queues.Where(q => !q.IsCompleted && q.QueueType == 0).ToListAsync();
 
-            foreach ( var file in filesToComplete )
+            var dataMap = new DataMap(context);
+
+            foreach (var queue in queuesToComplete)
             {
-                file.IsCompleted = true;
-                file.DateUpdate = DateTime.Now;
-            }
+                var dataset = await dataMap.MapExcelFileAsync(queue);
+                context.DataSetTables.Add(dataset);
+                queue.IsCompleted = true;
+                queue.DateUpdate = DateTime.Now;
+                queue.DatasetTableGuid = dataset.Id;
 
-            await context.SaveChangesAsync();
+                await context.SaveChangesAsync();
+            }
         }
     }
 }

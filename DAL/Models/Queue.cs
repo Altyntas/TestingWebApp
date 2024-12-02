@@ -8,5 +8,6 @@
         public DateTime DateCreate { get; set; }
         public DateTime DateUpdate { get; set; }
         public bool IsCompleted { get; set; }
+        public Guid? DatasetTableGuid { get ; set; }
     }
 }
