@@ -1,5 +1,7 @@
-﻿using DAL;
+﻿using Common;
+using DAL;
 using DAL.Models;
+
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
 using System;
@@ -9,6 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 
 namespace DataWorker.DataMapping
 {
@@ -45,7 +48,7 @@ namespace DataWorker.DataMapping
                     columns.Add(new DataSetColumns()
                     {
                         Name = sheet.Cells[1, i].Text,
-                        Type = "VARCHAR(50)" //TODO: Need to create type parcing
+                        Type = sheet.Cells[2, i].Text.GetDataType()
                     });
                 }
 
@@ -60,7 +63,6 @@ namespace DataWorker.DataMapping
                 };
 
                 //Creating table with columns and data type
-                //await _context.Database.ExecuteSqlRawAsync($"CREATE TABLE dbo.{table.Name} ");
                 var createTableSqlString = $"CREATE TABLE dbo.{table.Name} (";
                 for (int i = 0; i < table.Columns.Count(); i++)
                 {
