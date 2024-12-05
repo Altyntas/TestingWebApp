@@ -5,17 +5,19 @@ import { AppComponent }   from './app.component';
 import { HomeComponent } from './components/home/home.component'
 import { HttpClientModule } from '@angular/common/http';
 import { Routes, RouterModule } from '@angular/router';
+import { DatasetsComponent } from './components/datasets/datasets.component'
 
 //Define routes
 const appRoutes: Routes = [
     { path: '', component: HomeComponent },
+    { path: 'datasets', component: DatasetsComponent },
     { path: '**', redirectTo: '/' }
 ];
 
 @NgModule({
     imports:      [ BrowserModule, FormsModule, HttpClientModule, RouterModule.forRoot(appRoutes) ],
-    declarations: [ AppComponent, HomeComponent ],
-    bootstrap:    [ AppComponent , HomeComponent ]
+    declarations: [ AppComponent, HomeComponent, DatasetsComponent ],
+    bootstrap:    [ AppComponent , HomeComponent, DatasetsComponent ]
 })
 
 export class AppModule { }
