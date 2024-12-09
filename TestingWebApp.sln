@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DAL", "DAL\DAL.csproj", "{8
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataWorker", "DataWorker\DataWorker.csproj", "{E4DBC8A7-5942-4DEF-A1F0-27E794FCA8A1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{A3210577-8AC9-4590-BF5E-20F0037C6A60}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Common\Common.csproj", "{A3210577-8AC9-4590-BF5E-20F0037C6A60}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

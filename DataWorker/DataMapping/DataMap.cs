@@ -84,7 +84,7 @@ namespace DataWorker.DataMapping
                     var rowValues = new List<string>();
 
                     for (int i = 1; i < sheet.Columns.Count() + 1; i++)
-                        rowValues.Add(sheet.Cells[2, i].Text);
+                        rowValues.Add(sheet.Cells[j, i].Text);
 
                     var insertString = $"INSERT INTO dbo.{table.Name}({string.Join(',', table.Columns.Select(c => c.Name))}) VALUES({string.Join(',', rowValues.Select(r => "\'" + r + "\'"))})";
                     await _context.Database.ExecuteSqlRawAsync(insertString);
