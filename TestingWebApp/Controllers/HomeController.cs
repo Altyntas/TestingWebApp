@@ -1,6 +1,7 @@
 ﻿using DAL;
 using DAL.Models;
 using Microsoft.AspNetCore.Mvc;
+using OfficeOpenXml;
 using TestingWebApp.ViewModel;
 
 namespace TestingWebApp.Controllers
@@ -9,6 +10,11 @@ namespace TestingWebApp.Controllers
     [Route("api/home")]
     public class HomeController : Controller
     {
+        public HomeController()
+        {
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial; //TODO: move in appsettings
+        }
+
         [Route("Index")]
         public IActionResult Index()
         {
@@ -58,6 +64,11 @@ namespace TestingWebApp.Controllers
                     UploadDate = DateTime.Now,
                     Data = dataFile
                 });
+
+                var columns = GetColumns(dataFile, dFile.Entity.Id);
+
+                await context.DataFileColumns.AddRangeAsync(columns);
+
                 await context.Queues.AddAsync(new Queue()
                 {
                     Id = new Guid(),
@@ -74,6 +85,32 @@ namespace TestingWebApp.Controllers
             {
                 //logger log error
                 return false;
+            }
+        }
+
+        private List<DataFileColumns> GetColumns(byte[] file, Guid dataFileId)
+        {
+            if (file is null)
+                return new List<DataFileColumns>();
+
+            using (var memStream = new MemoryStream(file))
+            {
+                var excelPackage = new ExcelPackage(memStream);
+
+                var sheet = excelPackage.Workbook.Worksheets.FirstOrDefault();
+
+                var columns = new List<DataFileColumns>();
+                for (int i = 1; i < sheet.Columns.Count() + 1; i++)
+                {
+                    columns.Add(new DataFileColumns()
+                    {
+                        Name = sheet.Cells[1, i].Text,
+                        ColumnTypeId = 1,
+                        DataFileId = dataFileId
+                    });
+                }
+
+                return columns;
             }
         }
     }

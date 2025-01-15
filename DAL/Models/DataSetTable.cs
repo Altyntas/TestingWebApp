@@ -17,7 +17,9 @@ namespace DAL.Models
         public string Name { get; set; }
         public DateTime? CreateDate { get; set; }
         public DateTime? UpdateDate { get; set; }
+        public Guid DataFileId { get; set; }
 
         public ICollection<DataSetColumns> Columns { get; set; }
+        public DataFile DataFiles { get; set; }
     }
 }

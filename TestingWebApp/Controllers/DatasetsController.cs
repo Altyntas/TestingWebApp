@@ -5,8 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Data;
+using System.Dynamic;
 using System.Linq.Dynamic.Core;
 using TestingWebApp.ViewModel;
+using static Npgsql.Replication.PgOutput.Messages.RelationMessage;
 
 
 namespace TestingWebApp.Controllers
@@ -33,36 +35,52 @@ namespace TestingWebApp.Controllers
             }).ToList();
         }
 
-        private class SpecificModel()
-        {
-            private string[]? DateAndTime { get; set; }
-            private string[]? NameOfDimension { get; set; }
-            private string[]? ValueOfDimension { get; set; }
-        }
 
-
+        /// <summary>
+        /// Get all data from dynamic table
+        /// </summary>
+        ///
         [HttpGet]
         [Route("GetDatasetChart")]
-        public void GetDatasetChart()
+        public List<DatasetColumnValueVM> GetDatasetChart()
         {
             var context = new WebAppContext();
 
-            var tableName = context.DataSetTables.Where(d => d.Id == Guid.Parse("f340601a-11f1-4f5e-b0a9-54811f04a249")).FirstOrDefault().Name;
+            var tableName = "soapdata_2025_01_12";// context.DataSetTables.Where(d => d.Id == Guid.Parse("f340601a-11f1-4f5e-b0a9-54811f04a249")).FirstOrDefault().Name;
 
             using (var cmd = context.Database.GetDbConnection().CreateCommand())
             {
                 cmd.CommandText = $"SELECT * FROM dbo.{tableName}";
                 context.Database.OpenConnection();
                 var reader = cmd.ExecuteReader();
-
                 var columns = Enumerable.Range(0, reader.FieldCount)
                         .Select(reader.GetName)
                         .ToList();
 
-                var testest = reader.GetValue(reader.GetOrdinal(columns[0]));
+                var datasetColumnValue = new List<DatasetColumnValueVM>();
+                while (reader.Read())
+                {
+                    var dataList = new List<ColumnValueVM>();
+                    foreach (var column in columns)
+                    {
+                        var data = reader.GetValue(reader.GetOrdinal(column));
+                        dataList.Add(new ColumnValueVM
+                        {
+                            Name = column,
+                            Value = data
+                        });
+                    }
+                    var dateDim = dataList.Where(d => d.Name.Contains("date")).Select(d => d.Value).FirstOrDefault()?.ToString();
+                    DateTime.TryParse(dateDim, out var date);
+                    datasetColumnValue.Add(new DatasetColumnValueVM()
+                    {
+                        ColumnValueList = dataList,
+                        DateDimension = date.ToString("yyyy-MM-dd")
+                    });
+                }
 
-                var testData = reader.ToDynamicList();
-                var testReader = testData[0];
+                
+                return datasetColumnValue;
             }
         }
     }

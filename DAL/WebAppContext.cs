@@ -11,9 +11,12 @@ namespace DAL
         }
 
         public DbSet<DataFile> DataFiles { get; set; }
+        public DbSet<DataFileColumns> DataFileColumns { get; set; }
         public DbSet<Queue> Queues { get; set; }
         public DbSet<DataSetTable> DataSetTables { get; set; }
         public DbSet<DataSetColumns> DataSetColumns { get; set; }
+        public DbSet<ColumnTypes> ColumnTypes { get; set; }
+
 
         //builder
         //TODO: move into partial class
@@ -32,6 +35,26 @@ namespace DAL
                 entity.Property(x => x.ContentType).HasColumnName("content_type");
                 entity.Property(x => x.UploadDate).HasColumnName("upload_date").HasColumnType("timestamp"); ;
                 entity.Property(x => x.Data).HasColumnName("data");
+            });
+
+            builder.Entity<DataFileColumns>(entity =>
+            {
+                entity.ToTable("data_file_columns");
+
+                entity.HasKey(x => x.Id);
+                entity.Property(x => x.Id).HasColumnName("id");
+                entity.Property(x => x.Name).HasColumnName("name");
+                entity.Property(x => x.DataFileId).HasColumnName("data_file_id");
+                entity.Property(x => x.ColumnTypeId).HasColumnName("column_type_id");
+
+                entity.HasOne(x => x.ColumnTypes)
+                    .WithMany(x => x.Columns)
+                    .HasForeignKey(x => x.ColumnTypeId);
+
+                entity.HasOne(x => x.DataFile)
+                    .WithMany(x => x.Columns)
+                    .HasForeignKey(x => x.DataFileId);
+
             });
 
             builder.Entity<Queue>(entity =>
@@ -57,10 +80,15 @@ namespace DAL
                 entity.Property(x => x.Name).HasColumnName("name");
                 entity.Property(x => x.CreateDate).HasColumnName("create_date").HasColumnType("timestamp");
                 entity.Property(x => x.UpdateDate).HasColumnName("update_date").HasColumnType("timestamp");
+                entity.Property(x => x.DataFileId).HasColumnName("data_file_id");
 
                 entity.HasMany(x => x.Columns)
                     .WithOne(x => x.DataSetTable)
                     .HasForeignKey(x => x.DataSetTableId);
+
+                entity.HasOne(x => x.DataFiles)
+                    .WithMany(x => x.DataSetTables)
+                    .HasForeignKey(x => x.DataFileId);
             });
 
             builder.Entity<DataSetColumns>(entity =>
@@ -78,6 +106,21 @@ namespace DAL
                 entity.HasOne(x => x.DataSetTable)
                     .WithMany(x => x.Columns) 
                     .HasForeignKey(x => x.DataSetTableId);
+            });
+
+            builder.Entity<ColumnTypes>(entity =>
+            {
+                entity.ToTable("column_types");
+
+                entity.HasKey(x => x.Id);
+                entity.Property(x => x.Id).HasColumnName("id");
+                entity.Property(x => x.Name).HasColumnName("name");
+
+                entity.HasData(new List<ColumnTypes>()
+                {
+                    new ColumnTypes(){ Id = 1, Name = "Dimension" },
+                    new ColumnTypes(){ Id = 2, Name = "Fact Value" }
+                });
             });
         }
 
